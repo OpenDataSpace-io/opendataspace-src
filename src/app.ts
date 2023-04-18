@@ -1,3 +1,4 @@
+console.log("Hello World");
 // Initialize the editor with a JSON schema
 //@ts-ignore
 var editor = new JSONEditor(document.getElementById('editor_holder'),{
