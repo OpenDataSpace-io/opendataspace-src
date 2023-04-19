@@ -1,7 +1,6 @@
 async function setObjecttoForm(editor: any, id: any) {
   const objectData = await loadObject(id);
   editor.setValue(objectData);
-  globalThis.historyData = objectData;
   return objectData;
 }
 
@@ -23,14 +22,6 @@ async function setObject(editor: any, id: any) {
   editor.setValue(objectData);
   return objectData;
 }
-
-function getValueEditor(data: any) {
-  console.log("Get Value");
-  console.log(data);
-  return data;
-}
-
-var historyData = null;
 
 function main() {
   var url = new URL(document.URL);
@@ -67,15 +58,6 @@ function main() {
         setObjectHistory(data, id);
       });
     }
-    
-    if (params.get("id") === "new") {
-      console.log("id is new");
-    } else {
-      console.log("id is not new");
-      console.log(params.get("id"));
-      setObjecttoForm(editor, params.get("id"));
-    }
-    //getValueEditor(editor);
   }
 }
 

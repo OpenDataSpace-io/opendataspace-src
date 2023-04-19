@@ -89,7 +89,6 @@ function patchObjecttoS3(path: any, data: any) {
 async function loadObject(id: any) {
     const response = await fetch("https://opendataspace.sos-ch-dk-2.exo.io/api/rest/v1/object/"+id+".json");
     const jsonData = await response.json();
-    console.log(jsonData);
     return jsonData;
 }
 
