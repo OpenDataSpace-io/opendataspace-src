@@ -1,7 +1,15 @@
 async function setObjecttoForm(editor: any, id: any) {
   const objectData = await loadObject(id);
   editor.setValue(objectData);
+  globalThis.historyData = objectData;
   return objectData;
+}
+
+function setObjectHistory(data: any, id: any) {
+  console.log(Date.now());
+  const timestamp = Date.now();
+  const keyHistory = "api/rest/v1/object/" + id + "/history/"+timestamp+".json";
+  patchObjecttoS3(keyHistory, data);
 }
 
 function uploadObjecttoS3(data: any, id: any) {
@@ -16,20 +24,13 @@ async function setObject(editor: any, id: any) {
   return objectData;
 }
 
-function addEventListener() {
-  //@ts-ignore
-  document.getElementById('submit').addEventListener('click', function () {
-    console.log("Submit button clicked");
-    //console.log(editor.getValue());
-    //uploadObjecttoS3(editor, editor.getValue());
-  });
-}
-
 function getValueEditor(data: any) {
   console.log("Get Value");
   console.log(data);
   return data;
 }
+
+var historyData = null;
 
 function main() {
   var url = new URL(document.URL);
@@ -42,6 +43,7 @@ function main() {
   if (url.pathname === "/object/") {
     console.log("Set JSONEditor");
     var editor = loadJSONEditor();
+    var historyData = null;
     //addEventListener();
     var id : any = null;
     if (params.get("id") === "new") {
@@ -58,9 +60,11 @@ function main() {
     if (input) {
       input.addEventListener('click', () => {
         console.log("Submit button clicked");
+        console.log(Date.now());
         console.log(editor.getValue());
         var data = editor.getValue();
         uploadObjecttoS3(data, id);
+        setObjectHistory(data, id);
       });
     }
     
