@@ -1,73 +1,78 @@
-console.log("Hello World");
-// Initialize the editor with a JSON schema
-//@ts-ignore
-var editor = new JSONEditor(document.getElementById('editor_holder'),{
-    schema: {
-      type: "object",
-      title: "Restaurant",
-      properties: {
-        name: {
-            type: "string",
-            minLength: 1,
-            title: "Name",
-        },
-        make: {
-          type: "string",
-          enum: [
-            "Toyota",
-            "BMW",
-            "Honda",
-            "Ford",
-            "Chevy",
-            "VW"
-          ]
-        },
-        model: {
-          type: "string"
-        },
-        year: {
-          type: "integer",
-          enum: [
-            1995,1996,1997,1998,1999,
-            2000,2001,2002,2003,2004,
-            2005,2006,2007,2008,2009,
-            2010,2011,2012,2013,2014
-          ],
-          default: 2008
-        },
-        safety: {
-          type: "integer",
-          format: "rating",
-          maximum: "5",
-          exclusiveMaximum: false,
-          readonly: false
-        }
-      }
-    }
-  });
-
-  function createObject(path: any, data: any) {
-    const appS3Config = getAppS3Config();
-    const instanceS3 = new S3StorageService(appS3Config);
-    instanceS3.uploadObject(path, data);
+async function setObjecttoForm(editor: any, id: any) {
+  const objectData = await loadObject(id);
+  editor.setValue(objectData);
+  return objectData;
 }
 
-  console.log("Load JSON-Editor");
-  // Hook up the submit button to log to the console
-  //@ts-ignore
-  document.getElementById('submit').addEventListener('click',function() {
-    console.log("Submit button clicked");
-    let uuid = self.crypto.randomUUID();
-    console.log(uuid); 
-    // Get the value from the editor
-    console.log(editor.getValue());
-    const key = "api/rest/v1/object/"+uuid+".json";
-    //const data = { username: "TEST" };
-    createObject(key, editor.getValue());
-  });
+function uploadObjecttoS3(data: any, id: any) {
+  const key = "api/rest/v1/object/" + id + ".json";
+  console.log(data);
+  patchObjecttoS3(key, data);
+}
 
+async function setObject(editor: any, id: any) {
+  const objectData = await loadObject(id);
+  editor.setValue(objectData);
+  return objectData;
+}
+
+function addEventListener() {
+  //@ts-ignore
+  document.getElementById('submit').addEventListener('click', function () {
+    console.log("Submit button clicked");
+    //console.log(editor.getValue());
+    //uploadObjecttoS3(editor, editor.getValue());
+  });
+}
+
+function getValueEditor(data: any) {
+  console.log("Get Value");
+  console.log(data);
+  return data;
+}
+
+function main() {
   var url = new URL(document.URL);
   console.log(url.pathname);
   console.log(url.search);
   var params = url.searchParams;
+  console.log(params);
   console.log(params.get("id"));
+
+  if (url.pathname === "/object/") {
+    console.log("Set JSONEditor");
+    var editor = loadJSONEditor();
+    //addEventListener();
+    var id : any = null;
+    if (params.get("id") === "new") {
+      console.log("id is new");
+      id = self.crypto.randomUUID();
+    } else {
+      console.log("id is not new");
+      console.log(params.get("id"));
+      id = params.get("id");
+      setObjecttoForm(editor, params.get("id"));
+    }
+
+    const input = document.getElementById('submit') as HTMLInputElement | null;
+    if (input) {
+      input.addEventListener('click', () => {
+        console.log("Submit button clicked");
+        console.log(editor.getValue());
+        var data = editor.getValue();
+        uploadObjecttoS3(data, id);
+      });
+    }
+    
+    if (params.get("id") === "new") {
+      console.log("id is new");
+    } else {
+      console.log("id is not new");
+      console.log(params.get("id"));
+      setObjecttoForm(editor, params.get("id"));
+    }
+    //getValueEditor(editor);
+  }
+}
+
+main();
