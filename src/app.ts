@@ -52,7 +52,9 @@ function main() {
       input.addEventListener('click', () => {
         console.log("Submit button clicked");
         console.log(Date.now());
+        //@ts-ignore
         console.log(editor.getValue());
+        //@ts-ignore
         var data = editor.getValue();
         uploadObjecttoS3(data, id);
         setObjectHistory(data, id);
