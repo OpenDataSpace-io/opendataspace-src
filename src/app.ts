@@ -12,7 +12,7 @@ function setObjectHistory(data: any, id: any) {
 }
 
 function uploadObjecttoS3(data: any, id: any) {
-  const key = "api/rest/v1/object/" + id + ".json";
+  const key = "api/rest/v1/object/" + id + "/index.json";
   console.log(data);
   patchObjecttoS3(key, data);
 }
